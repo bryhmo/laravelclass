@@ -1,0 +1,224 @@
+Route::get('sepro.com', function(){
+    if(!session()->has('myHolder')){
+        return redirect('selog.com');
+        // ->with('message','please login properly');
+        // return redirect('hack.com');
+        // return redirect('selog.com');
+        // return redirect('selog.com','please login through the main page']);
+    }
+    return view('sessionprofile');
+});
+
+//protecting the login route
+Route::get('selog.com', function(){
+    if(session()->has('myHolder')){
+        return redirect('sepro.com');
+    }
+    return view('sessionlogin');
+});
+
+
+//conditioning the logout 
+
+Route::get('/logout',function(){
+    if(session()->has('myHolder'))
+    {
+        session()->pull('myHolder');
+        return redirect('selog.com');
+    }
+    return view('sepro.com');
+    
+});
+
+
+
+<h1 style="text-align: center; color:red;">{{session('myHolder')}} profile dashboard</h1>
+<h2 style="text-align: center; color:green;">welcome {{session('myHolder')}}</h2>
+
+
+
+<h2 style="text-align:center;color:chocolate"><a href="/logout" >Logout</a></h2>
+
+
+
+public function isOnline($site = "https://youtube.com/"){
+        if(@fopen($site,'r')){
+            return true;
+        }
+        else
+        {
+            return false;
+        }
+    }
+
+
+
+if($this->isOnline())
+        {
+            $mail_data =[
+                'recipient'=>'webcodekingdom@gmail.com',
+                'fromEmail'=>$request->email,
+                'fromName'=>$request->name,
+                'subject'=>$request->subject,
+                'body'=>$request->message
+            ];
+            Mail::send('email',$mail_data, function($message) use ($mail_data){
+                $message->to($mail_data['recipient'])
+                        ->from($mail_data['fromEmail'],$mail_data['fromName'])
+                        ->subject($mail_data['subject']);
+            });
+
+            return back()->with('success','Email has been sent successfully');
+            // return '<h2 style="color:green">Connected</h2>';
+        }
+        else
+        {
+            return back()->with('error','error!!! No internet connection');
+        }
+
+
+         @if(session()->has('error'))
+    <span style="color: red; text-align:center">
+        <h2>
+            {{session('error')}}
+        </h2>
+    </span>
+        
+@endif
+
+
+
+$DataInput = $request->input('username');
+        session()->flash('username',$DataInput);
+                //   or
+        // $request->session()->flash('username',$DataInput);
+        return redirect('add.com');
+     // return json_encode($DataInput);
+        // $request->session()->flash('status', 'Task was successful!');
+    }
+}
+
+<h1 style="text-align: center; color:red;">Add Member</h1>
+@if(session('username'))
+<h2 style="color:green;text-align:center" >{{session('username')}} User has been added successful</h2>
+@endif
+<form action="addmember.com" method="post" style="margin-left:45%">
+    @csrf
+    <input type="text" name="username" placeholder="enter your username"><br><br>
+    <input type="password" name="password" placeholder="enter your password"><br><br>
+    <input type="email" name="email" placeholder="enter your email"><br><br>
+    <button type="submit">Add New User</button>
+</form>
+
+
+
+function FileUpload(Request $request)
+    {
+        $myfile = $request->file('photo');
+        dd($myfile);
+        /* $myfilename = $myfile->getClientOriginalName();
+        $fileextension =$myfile->getClientOriginalExtension();
+        $filepath = 'photos'.'/';
+        $myfile->move($filepath,$myfilename);
+        return $myfile; */
+     
+        /* 
+        if ($request->hasFile('photo')) {
+            $file = $request->file('photo');
+            $filename = $file->getClientOriginalName();
+            $destinationPath = 'storage/images'.'/';
+            $file->move($destinationPath, $filename);
+            return $file;
+        }
+         */
+        /* $fileHolder = $request->file('photo')->store('photos');
+        return $fileHolder; */
+    }
+
+
+//model protected value
+
+    protected $fillable = [
+        'lastname',
+        'firstname',
+        'othername',
+        'email',
+        'password'
+    ]
+    protected $table = 'students'
+    protected $primaryKey = 'id'
+
+
+
+
+    //All Listing 
+Route::get('/',[ListingController::class,'index']);
+
+
+
+//Show create Form
+Route::get('/listings/create',[ListingController::class,'create'])->middleware('auth');
+
+//Store  Listings Data
+Route::post('/listings',[ListingController::class,'store'])->middleware('auth');
+
+//Show Edit Form
+Route::get('/listings/{listing}/edit',[ListingController::class,'edit'])->middleware('auth');;
+
+
+//Update Listing
+Route::put('/listings/{listing}',[ListingController::class,'update'])->middleware('auth');;
+
+
+//delete Listing
+Route::delete('/listings/{listing}',[ListingController::class,'destroy'])->middleware('auth');
+
+
+//Manage Listings
+Route::get('listings/manage',[ListingController::class,'manage'])->middleware('auth');
+
+
+//Single Listings
+Route::get('/listings/{listing}',[ListingController::class,'show']);
+
+
+//Show Register/Create Form
+Route::get('/register',[UserController::class,'create'])->middleware('guest');
+
+
+//Create New User
+Route::post('/users',[UserController::class,'store']);
+
+//logout user 
+Route::post('/logout',[UserController::class,'logout'])->middleware('auth');
+
+//show login form 
+Route::get('/login', [UserController::class,'login'])->name('login')->middleware('guest');
+
+
+//log in user 
+Route::post('users/authenticate',[UserController::class,'authenticate']);
+
+
+
+ //Delete listing 
+ public function destroy(Listing $listing){
+    $listing->delete();
+    return redirect('/')->with('success',"Listing deleted successfully");
+}
+
+ public function edit(Listing $listing){
+        // dd($listing);
+        // dd($listing->title);
+        return view('listings.edit',['listing'=>$listing]);
+    }
+
+
+
+<h2>{{$studentlist->links()}}</h2>
+
+<style>
+    .w-5{
+        display: none;
+    }
+</style>

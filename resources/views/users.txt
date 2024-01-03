@@ -1,0 +1,131 @@
+  //
+   /*  public function paginate(){
+        $pages = Student::paginate(15);
+        return $pages;
+    } */
+    function myPagination(){
+
+        // $data = Student::all();
+        $data = Student::paginate(15);
+
+        return view('pagelist',['studentlist'=>$data]);
+        // return json_encode($data);
+
+        // return "hello guys the paginated page will be dispayed here";
+    }
+
+    //functions for the deletion of the student fro the database
+    public function deleteUser($id){
+
+        $data = Student::find($id);
+
+        $data->delete();
+
+        return redirect('student.com');
+    }
+
+    //function for the students records edit
+    function showUser($id){
+        $dataedit = Student::find($id);
+        return view('edit',['keyholder'=> $dataedit]);
+        // return view('studentedit',['keyholder'=> $dataedit]);
+    }
+
+    //function for the update of the students records 
+    function updateUser(Request $request){
+        // retunr $request->input();
+        $UpdateData = Student::find($request->id);
+        $UpdateData->lastname = $request->lastname;
+        $UpdateData->firstname = $request->firstname;
+        $UpdateData->othername = $request->othername;
+        $UpdateData->studentid = $request->studentid;
+        $UpdateData->semester = $request->semester;
+        $UpdateData->email = $request->email;
+        $UpdateData->phone = $request->phone;
+        $UpdateData->save();
+        return redirect('student.com');
+    }
+
+    //creating a new users
+    public function AddUser(Request $request){
+        // return "the new users form will be"
+        $data = new Student();
+        $data->lastname = $request->lastname;
+        $data->firstname = $request->firstname;
+        $data->othername = $request->othername;
+        $data->studentid = $request->studentid;
+        $data->semester = $request->semester;
+        $data->email = $request->email;
+        $data->phone = $request->phone;
+        $data->save();
+        return redirect('student.com');
+    }
+
+
+
+    <h1 style="text-align: center;">welcome edit your name</h1>
+<form action="edit" method="POST" style="margin-left: 30%;color:red;">
+@csrf
+    <input type="hidden" name="id" value="{{$keyholder['id']}}"><br><br>
+    <br>
+    <label for="firstname">LastName:</label>
+    <input type="text" name="lastname" value="{{$keyholder['lastname']}}"><br><br>
+    <br>
+    <label for="firstname">FirstName:</label>
+    <input type="text" name="firstname" value="{{$keyholder['firstname']}}"><br><br>
+    <br>
+    <label for="othername">OtherName:</label>
+    <input type="text" name="othername" value="{{$keyholder['othername']}}"><br><br>
+    <br>
+    <label for="studentid">StudentID:</label>
+    <input type="text" name="studentid" value="{{$keyholder['studentid']}}"><br><br>
+    <br>
+    <label for="semester">Semester:</label>
+    <input type="text" name="semester" value="{{$keyholder['semester']}}"><br><br>
+    <br>
+    <label for="email">Email:</label>
+    <input type="email" name="email" value="{{$keyholder['email']}}"><br><br>
+    <br>
+    <label for="phone">Phone:</label>
+    <input type="number" name="phone" value="{{$keyholder['phone']}}"><br><br>
+    <br>
+    <button type="submit">update your record</button><br><br>
+</form>
+
+
+"/update/{{$users->id}}"
+
+
+@if(session()->has('message'))
+    <div class="alert alert-success" x-data="{show: true}" x-init="setTimeout(() => show = false,3000)" x-show="show"  style="text-align: center;color:green">
+        {{ session()->get('message') }}
+    </div>
+
+
+
+   //Show Edit Form 
+    public function edit(Nine $nine){
+        // dd($nine);
+        // dd($nine->firstname);
+        return view('edit',['users'=>$nine]);
+    }
+
+     //Update  Data
+     public function update(Request $request,Nine $nine){
+        $formfields = $request->validate([
+            'lastname'=>'required',
+            'firstname'=>'required',
+            'email'=>['required','email'],
+            'password'=>'required'
+        ]);
+        if($formfields){
+            $nine->update($formfields);
+            return redirect('dnine')->with('message','user Upadted successfully');
+        }
+    }
+
+    //Delete user
+    public function destroy(Nine $nine){
+        $nine->delete();
+        return back()->with('message',"user deleted successfully");
+    }
